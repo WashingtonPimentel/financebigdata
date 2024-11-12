@@ -54,6 +54,7 @@ def get_data(tickers, interval="1d"):
 
 
 # Função de aprendizado de máquina para prever sinais de compra e venda com base no RSI
+# Função de aprendizado de máquina para prever sinais de compra e venda com base no RSI
 def machine_learning_rsi(data, ticker):
     prices = data[ticker]
     
@@ -90,8 +91,7 @@ def machine_learning_rsi(data, ticker):
     print(f'Acurácia do modelo: {accuracy:.2f}')
 
     # Adicionar sinais de compra e venda no gráfico
-    return prices, model
-
+    return prices, model, accuracy  # Agora a função retorna três valores
 
 # Função para plotar gráficos de velas com volume e RSI, incluindo sinais de compra e venda
 def plot_candlestick(data, title, frame):
@@ -100,8 +100,8 @@ def plot_candlestick(data, title, frame):
 
     for ticker, prices in data.items():
         # Obter o modelo de Machine Learning e prever os sinais
-        prices, model = machine_learning_rsi(data, ticker)
-        
+        prices, model, accuracy = machine_learning_rsi(data, ticker)  # Passando a acurácia
+
         # Criar o gráfico de velas
         fig, axes = mpf.plot(prices, type='candle', volume=True, show_nontrading=True,
                              title=title, style='charles', returnfig=True)
@@ -133,6 +133,10 @@ def plot_candlestick(data, title, frame):
 
         ax_rsi.legend(loc='upper left')
 
+        # Adicionar a acurácia no gráfico
+        ax_rsi.text(0.5, 0.1, f"Precisão 1=100%     : {accuracy:.2f}", transform=ax_rsi.transAxes,
+                    fontsize=12, color='blue', ha='center', va='top', bbox=dict(facecolor='white', alpha=0.7))
+
         # Adicionar o gráfico de volume como o terceiro subplot
         ax_volume = fig.add_subplot(3, 1, 3, sharex=ax_candle)
         ax_volume.bar(prices.index, prices['Volume'], color='blue')
@@ -153,7 +157,6 @@ def plot_candlestick(data, title, frame):
         canvas.draw()
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
-        
 # Função para plotar gráficos de linhas com bordas arredondadas
 def plot_line(data, title, frame, labels=None, unit=''):
     for widget in frame.winfo_children():
